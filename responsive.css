@@ -5,13 +5,25 @@
     }
 }
 
+@media(max-width: 1024px) {
+    .section {
+        padding: 50px 0px;
+    }
+}
+
 @media(max-width: 820px) {
+    .section {
+        padding: 40px 0px;
+    }
     .product .product-card-wrap {
         width: 50%;
     }
 }
 
 @media(max-width: 740px) {
+    .section {
+        padding: 30px 0px;
+    }
     .navbar {
         height: auto;
         padding: 20px 0;
@@ -27,6 +39,9 @@
         align-items: center;
         position: relative;
         cursor: pointer;
+    }
+    .banner h1, .title h1 {
+        font-size: 36px;
     }
     .burger .lines {
         width: 100%;
@@ -51,10 +66,38 @@
     .menubar-wrap {
         gap: 20px;
     }
+    .banner .scroll-to-section {
+        padding: 10px 20px;
+    }
 }
 
 @media(max-width: 600px) {
+    .section {
+        padding: 20px 0px;
+    }
     .product .product-card-wrap {
         width: 100%;
+    }
+    .banner {
+        width: 100%;
+        height: auto;
+    }
+    .banner h1, .title h1 {
+        font-size: 32px;
+    }
+}
+
+@media(max-width: 550px) {
+    .banner h1, .title h1 {
+        font-size: 28px;
+    }
+    .banner .scroll-to-section {
+        padding: 8px 14px;
+    }
+}
+
+@media(max-width: 420px) {
+    .banner h1 {
+        font-size: 24px;
     }
 }

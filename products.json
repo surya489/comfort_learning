@@ -63,6 +63,14 @@
                 "price" : "499",
                 "image" : { "fields" : { "file" : { "url" : "/assets/images/cplusplus.png" } } }
             }
+        },
+        {
+            "sys" : {"id" : "9"},
+            "fields" : {
+                "title" : "Data Structure & Algorithms",
+                "price" : "899",
+                "image" : { "fields" : { "file" : { "url" : "/assets/images/cplusplus.png" } } }
+            }
         }
     ]
 }

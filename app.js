@@ -9,8 +9,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const cartContent = document.querySelector('.cart-content');
     const clearBtn = document.querySelector('.clear-cart-btn');
     const burgerMenu = document.querySelector('.burger');
+    const loadMoreBtn = document.createElement('button');
+    loadMoreBtn.innerText = 'Load More';
+    loadMoreBtn.classList.add('btn', 'load-more-btn');
     let Cart = [];
     let buttonsDOM = [];
+    let products = [];
+
+    window.addEventListener('scroll', function() {
+        if (window.scrollY > 0) {
+            document.body.classList.add('scrolled');
+            let navbarWrap = document.querySelector('.navbar-wrap');
+            let height = navbarWrap.offsetHeight;
+            document.querySelector('.section-wrap').style.marginTop = `${height}px`;
+        } else {
+            document.body.classList.remove('scrolled');
+            document.querySelector('.section-wrap').style.marginTop = '0px';
+        }
+    });
 
     cart.addEventListener('click', function () {
         cartSidebar.style.transform = "translate(0%)";
@@ -56,8 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
         async getProduct() {
             const response = await fetch("products.json");
             const data = await response.json();
-            let products = data.items;
-            products = products.map(item => {
+            products = data.items.map(item => {
                 const { title, price } = item.fields;
                 const { id } = item.sys;
                 const image = item.fields.image.fields.file.url;
@@ -68,9 +83,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     class UI {
-        displayProducts(products) {
+        constructor() {
+            this.displayedProducts = [];
+        }
+
+        displayProducts(productsToDisplay) {
             let result = "";
-            products.forEach(product => {
+            productsToDisplay.forEach(product => {
                 const productDiv = document.createElement("div");
                 productDiv.innerHTML = `<div class="product-card">
                                             <img src="${product.image}" alt="product" />
@@ -89,6 +108,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 productDiv.classList.add('product-card-wrap');
                 p.append(productDiv);
             });
+
+            this.displayedProducts = this.displayedProducts.concat(productsToDisplay.map(product => product.id));
+
+            const p = document.querySelector('.section-two');
+            const loader = document.querySelector('.loader');
+            if (products.length > this.displayedProducts.length) {
+                if (!p.contains(loadMoreBtn)) {
+                    p.append(loadMoreBtn);
+                }
+                loadMoreBtn.addEventListener('click', () => {
+                    loader.style.display = 'block';
+                    setTimeout(() => {
+                        loader.style.display = 'none';
+                        const remainingProducts = products.filter(product => !this.displayedProducts.includes(product.id));
+                        this.displayProducts(remainingProducts.slice(0, 6));
+                    }, 1000);
+                });
+            } else {
+                if (p.contains(loadMoreBtn)) {
+                    p.removeChild(loadMoreBtn);
+                }
+            }
+
             this.updateButtonsState();
         }
 
@@ -187,7 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (removeBtn) {
                     let id = removeBtn.dataset.id;
                     this.removeItem(id);
-                    removeBtn.closest(".cart-product").remove();
+                    removeBtn.closest(".cart-product-wrap").remove();
                 } else if (event.target.classList.contains('add-amount')) {
                     let id = event.target.dataset.id;
                     let item = Cart.find((item) => item.id === id);
@@ -208,7 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         event.target.closest(".cart-product").remove();
                     }
                 }
-                this.updateButtonsState(); // Ensure updateButtonsState() is called after modifying the cart
+                this.updateButtonsState();
             });
         }
 
@@ -223,7 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 button.innerHTML = `<i class="fa fa-cart-plus"></i>Add to Cart`;
                 button.disabled = false;
             });
-            this.updateButtonsState(); // Ensure updateButtonsState() is called after clearing the cart
+            this.updateButtonsState();
         }
 
         removeItem(id) {
@@ -236,7 +278,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 button.innerHTML = `<i class="fa fa-cart-plus"></i>Add to Cart`;
                 button.disabled = false;
             }
-            this.updateButtonsState(); // Ensure updateButtonsState() is called after removing an item
+            this.updateButtonsState();
         }
 
         getSingleButton(id) {
@@ -260,11 +302,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    const products = new Product();
+    const loadProduct = new Product();
     const ui = new UI();
     ui.setUpApp();
-    products.getProduct().then(products => {
-        ui.displayProducts(products);
+    loadProduct.getProduct().then(products => {
+        ui.displayProducts(products.slice(0, 6));
         Storage.saveProducts(products);
     }).then(() => {
         ui.getButton();
