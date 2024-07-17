@@ -94,6 +94,9 @@
     .banner .scroll-to-section {
         padding: 8px 14px;
     }
+    .cart-sidebar, .menu-sidebar {
+        width: 100vw;
+    }
 }
 
 @media(max-width: 420px) {
